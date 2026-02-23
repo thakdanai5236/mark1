@@ -101,18 +101,49 @@ async def chat(request: ChatRequest):
     """
     Chat with the marketing analytics agent.
     
+    Uses RAG for context retrieval and LLM for response generation.
+    
     Args:
-        request: Chat message
+        request: Chat message with optional conversation ID and context
         
     Returns:
-        Agent response
+        Agent response with sources and structured data
     """
-    # TODO: Implement chat logic with RAG
-    return ChatResponse(
-        success=True,
-        message="",
-        sources=[]
-    )
+    from app.services.chatbot_service import get_chatbot_service
+    
+    try:
+        # Get chatbot service
+        service = get_chatbot_service()
+        
+        # Process chat message
+        chatbot_response = await service.chat(
+            message=request.message,
+            conversation_id=request.conversation_id,
+            context=request.context,
+            retrieve_context=True,
+            max_context_docs=3
+        )
+        
+        # Convert to API response
+        return ChatResponse(
+            success=True,
+            message=chatbot_response.message,
+            sources=chatbot_response.sources,
+            data=chatbot_response.data,
+            suggested_actions=[chatbot_response.action] if chatbot_response.action else None
+        )
+        
+    except ValueError as e:
+        # Missing API key or configuration
+        raise HTTPException(
+            status_code=500,
+            detail=f"Configuration error: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Chat processing failed: {str(e)}"
+        )
 
 
 @router.get("/health")

@@ -42,12 +42,9 @@ agent_mark1/
 │       └── pipeline.py             # Channel analysis + CLI
 │
 ├── pipelines/                      # PHASE 2: Data Preparation
-│   ├── fix_and_merge_demo.py       # Lead-Demo data merger
-│   ├── channel_intelligence.py     # Channel aggregation + classification
-│   ├── load_data.py                # Data loading utilities
-│   ├── clean_lead_data.py          # Data cleaning
-│   ├── aggregate_channel.py        # Channel aggregation
-│   └── feature_engineering.py      # Feature preparation
+│   ├── channel_intelligence.py     # Deterministic data preparation for channel analysis
+│   ├── fix_and_merge_demo.py       # handles data preparation
+
 │
 ├── data/                           # Data storage
 │   ├── raw/                        # Original data files

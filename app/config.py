@@ -15,9 +15,14 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     
     # LLM Settings
+    LLM_PROVIDER: str = "ollama"  # 'openai' or 'ollama'
     OPENAI_API_KEY: Optional[str] = None
-    LLM_MODEL: str = "gpt-4"
+    LLM_MODEL: str = "llama2"  # Default model for Ollama
     LLM_TEMPERATURE: float = 0.7
+    
+    # Ollama Settings
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama2"  # Can be any Ollama model: mistral, neural-chat, etc
     
     # Vector Store Settings
     VECTOR_STORE_PATH: str = "data/vector_store"
