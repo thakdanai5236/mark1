@@ -20,6 +20,7 @@ Core principles:
 | **PHASE 1** | Strategy Pipeline | LOCKED business rules and strategy simulation | `core/strategy/` |
 | **PHASE 2** | Channel Data Preparation | ETL and channel performance aggregation | `pipelines/` |
 | **PHASE 3** | Channel Growth Intelligence | Growth/Bottleneck detection, sensitivity simulation | `core/channel/` |
+| **PHASE 4** | Enterprise Channel Optimization | LP-based demo maximization under capacity/budget/scaling constraints | `app/engine/enterprise_optimizer.py` |
 
 ---
 
@@ -53,7 +54,7 @@ agent_mark1/
 │   ├── interim/                    # Intermediate processing
 │   └── processed/                  # Final clean data
 │
-├── app/                            # AI Application Layer (Future)
+├── app/                            # AI Application Layer (Phase 4 engine, API, LLM, RAG)
 ├── tests/                          # Unit tests
 └── notebooks/                      # Analysis notebooks
 ```
@@ -220,6 +221,86 @@ print(result['sensitivity_results'])         # Growth/Bottleneck scenarios
 ```bash
 # CLI usage
 python -m core.channel.pipeline
+```
+
+---
+
+## PHASE 4: Enterprise Channel Optimization
+
+**Location:** `app/engine/enterprise_optimizer.py`
+
+**Purpose:** Optimize additional leads per channel to maximize total Demo count, under sales capacity, (optional) marketing budget, and per-channel scaling limits.
+
+### Model Overview
+
+- Decision variable: `x_i` = additional leads allocated to channel *i*
+- Objective: Maximize total additional demos `Σ(x_i × Demo_Rate_i)`
+- Constraints:
+  - Capacity: `Σ x_i ≤ capacity_remaining` (from sales capacity formula)
+  - Budget (optional): `Σ(x_i × Cost_per_Lead_i) ≤ marketing_budget` when a budget is provided
+  - Channel scaling: `x_i ≤ Leads_i × Max_Scale_Percentage_i`
+  - Non-negativity: `x_i ≥ 0`
+
+### Behavior of Budget Constraint
+
+- `marketing_budget=None` → **No budget constraint** (engine ignores budget, only capacity + scaling apply)
+- `marketing_budget > 0` → Budget is enforced as a hard constraint
+- `marketing_budget <= 0` (explicit) → Treated as "No Budget" (all additional allocations forced to 0)
+
+### Inputs
+
+- `channel_df` (from PHASE 2), with columns at minimum:
+  - `Channel`, `Leads`, `Demo_Rate`
+  - Optional: `Cost_per_Lead`, `Max_Scale_Percentage`
+- `number_of_sales` → used in capacity formula:
+  - `Sales Capacity = 10 × number_of_sales × 22`
+- `marketing_budget` (optional float)
+- `default_cost_per_lead`, `default_max_scale` used when columns are missing
+
+### Key Outputs (EnterpriseOptimizationResult)
+
+- `baseline` → current leads/demo/demo rate
+- `optimization_result` → new totals, additional demos, new demo rate, solver status
+- `allocation_plan` (DataFrame per channel) → current vs additional leads, additional demos, cost used, scaling utilization, `Scaling_Fully_Used` flag
+- `constraints_status` → capacity/budget used & remaining, utilization %, `demo_per_capacity`, `demo_per_budget`
+- Diagnostics & metadata:
+  - `binding_constraint` (none/capacity/budget/scaling/multiple)
+  - `executive_summary` (plain-language explanation of constraint
+    situation)
+  - `shadow_price_capacity`, `shadow_price_budget` + unit definitions
+  - `defaults_used`, `model_assumptions`
+
+### Usage (Programmatic)
+
+```python
+import pandas as pd
+from app.engine import run_enterprise_optimization
+
+df = pd.read_csv("data/processed/channel_performance_summary.csv")
+
+# Example 1: No budget constraint
+result_no_budget = run_enterprise_optimization(
+    channel_df=df,
+    number_of_sales=50,
+    marketing_budget=None,
+    verbose=False,
+)
+
+# Example 2: Budget and cost constraint
+result_with_budget = run_enterprise_optimization(
+    channel_df=df,
+    number_of_sales=50,
+    marketing_budget=50000.0,
+    default_cost_per_lead=100.0,
+    verbose=False,
+)
+```
+
+```bash
+# CLI usage (simple run)
+python -m app.engine.enterprise_optimizer --sales 50 --budget 50000 \
+    --cost-per-lead 100 --max-scale 0.30 \
+    --data data/processed/channel_performance_summary.csv
 ```
 
 ---
