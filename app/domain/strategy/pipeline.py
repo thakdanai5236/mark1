@@ -18,12 +18,12 @@ Created: 2026-02-18
 import pandas as pd
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Optional
-from core.strategy.business_rules import (
+from domain.strategy.business_rules import (
     OBJECTIVE,
     THINKING_ORDER,
     CORE_BUSINESS_QUESTIONS,
 )
-from core.strategy.calculations import (
+from domain.strategy.calculations import (
     OverallMetrics,
     ChannelMetrics,
     ChannelImpact,

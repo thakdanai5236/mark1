@@ -14,7 +14,7 @@ Created: 2026-02-18
 import pandas as pd
 from typing import Dict, List, Any
 
-from core.channel.constants import (
+from domain.channels.constants import (
     GROWTH_LEAD_SHARE_THRESHOLD,
     CONTACT_TYPE_MIN_LEADS,
     GROWTH_INCREASE_PCT,

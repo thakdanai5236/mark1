@@ -11,7 +11,7 @@ Exports:
 - pipeline: Main orchestration functions
 """
 
-from core.channel.constants import (
+from domain.channels.constants import (
     # Configuration
     DATA_DIR,
     GROWTH_LEAD_SHARE_THRESHOLD,
@@ -23,7 +23,7 @@ from core.channel.constants import (
     SensitivityResult,
 )
 
-from core.channel.calculations import (
+from domain.channels.calculations import (
     # Step 3.1
     calculate_baseline,
     # Step 3.2
@@ -42,7 +42,7 @@ from core.channel.calculations import (
     analyze_contact_type_overlay,
 )
 
-from core.channel.pipeline import (
+from domain.channels.pipeline import (
     run_channel_growth_intelligence,
     load_marketing_master,
 )

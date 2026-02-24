@@ -3,7 +3,7 @@ Context Builder - Constructs context from retrieved documents
 """
 
 from typing import List, Optional
-from app.rag.retriever import RetrievedDocument
+from app.Infrastructure.rag.retriever import RetrievedDocument
 
 
 class ContextBuilder:

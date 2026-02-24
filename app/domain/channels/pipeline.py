@@ -10,12 +10,12 @@ Created: 2026-02-18
 import pandas as pd
 from typing import Dict, Any, Optional
 
-from core.channel.constants import (
+from domain.channels.constants import (
     DATA_DIR,
     GROWTH_LEAD_SHARE_THRESHOLD,
     CONTACT_TYPE_MIN_LEADS,
 )
-from core.channel.calculations import (
+from domain.channels.calculations import (
     calculate_baseline,
     create_channel_rankings,
     identify_growth_channels,

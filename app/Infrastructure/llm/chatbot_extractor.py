@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 import json
 import re
-from app.llm.response_parser import ResponseParser, ParsedResponse
+from app.Infrastructure.llm.response_parser import ResponseParser, ParsedResponse
 
 
 @dataclass
