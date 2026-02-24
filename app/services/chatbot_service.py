@@ -4,12 +4,12 @@ Chatbot Service - End-to-end chat service with RAG integration
 
 from typing import Optional, Dict, Any, List
 import asyncio
-from app.llm.chatbot_extractor import ChatbotResponseExtractor, ChatbotResponse
-from app.llm.client import OpenAIClient, OllamaClient, LLMClientFactory
+from app.Infrastructure.llm.chatbot_extractor import ChatbotResponseExtractor, ChatbotResponse
+from app.Infrastructure.llm.client import OpenAIClient, OllamaClient, LLMClientFactory
 from app.role.prompt_builder import PromptBuilder
 from app.role.persona import Persona
-from app.rag.retriever import Retriever
-from app.rag.context_builder import ContextBuilder
+from app.Infrastructure.rag.retriever import Retriever
+from app.Infrastructure.rag.context_builder import ContextBuilder
 from app.config import settings
 
 
@@ -110,7 +110,7 @@ class ChatbotService:
         if self.retriever is None:
             if not self.use_rag:
                 return
-            from app.rag.retriever import Retriever
+            from app.Infrastructure.rag.retriever import Retriever
             self.retriever = Retriever(
                 vector_store_path=settings.VECTOR_STORE_PATH,
                 embedding_model=settings.EMBEDDING_MODEL
