@@ -13,7 +13,7 @@ Created: 2026-02-18
 import pandas as pd
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
-from core.strategy.business_rules import (
+from domain.strategy.business_rules import (
     FUNNEL,
     KPI,
     OBJECTIVE,

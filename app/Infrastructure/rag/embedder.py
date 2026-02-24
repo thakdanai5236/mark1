@@ -4,7 +4,7 @@ Embedder - Handles text embedding generation
 
 from typing import List, Optional
 from abc import ABC, abstractmethod
-
+import requests
 
 class BaseEmbedder(ABC):
     """Abstract base class for embedders."""
@@ -19,74 +19,63 @@ class BaseEmbedder(ABC):
         """Embed multiple documents."""
         pass
 
+class OllamaEmbedder(BaseEmbedder):
+    """Ollama-based embedder implementation."""
 
-class OpenAIEmbedder(BaseEmbedder):
-    """OpenAI-based embedder implementation."""
-    
     def __init__(
         self,
-        api_key: str,
-        model: str = "text-embedding-ada-002",
+        model: str = "nomic-embed-text",
+        base_url: str = "http://localhost:11434",
         batch_size: int = 100
     ):
         """
-        Initialize OpenAI embedder.
-        
+        Initialize Ollama embedder.
+
         Args:
-            api_key: OpenAI API key
-            model: Embedding model name
+            model: Ollama embedding model name (e.g., nomic-embed-text)
+            base_url: Ollama server URL
             batch_size: Batch size for embedding multiple documents
         """
-        self.api_key = api_key
         self.model = model
+        self.base_url = base_url
         self.batch_size = batch_size
-        self._client = None
-    
-    @property
-    def client(self):
-        """Lazy initialization of OpenAI client."""
-        if self._client is None:
-            from openai import OpenAI
-            self._client = OpenAI(api_key=self.api_key)
-        return self._client
-    
+
+    def _embed_single(self, text: str) -> List[float]:
+        response = requests.post(
+            f"{self.base_url}/api/embeddings",
+            json={
+                "model": self.model,
+                "prompt": text
+            },
+            timeout=60
+        )
+        response.raise_for_status()
+        return response.json()["embedding"]
+
     def embed_query(self, text: str) -> List[float]:
         """
-        Embed a single query text.
-        
-        Args:
-            text: Text to embed
-            
-        Returns:
-            Embedding vector
+        Behaves exactly like OpenAIEmbedder.embed_query
         """
-        response = self.client.embeddings.create(
-            model=self.model,
-            input=text
-        )
-        return response.data[0].embedding
-    
+        return self._embed_single(text)
+
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """
-        Embed multiple documents in batches.
-        
-        Args:
-            texts: List of texts to embed
-            
-        Returns:
-            List of embedding vectors
+        Behaves exactly like OpenAIEmbedder.embed_documents
+        - Returns List[List[float]]
+        - Preserves order
+        - Supports batching
         """
-        all_embeddings = []
-        
+
+        all_embeddings: List[List[float]] = []
+
         for i in range(0, len(texts), self.batch_size):
             batch = texts[i:i + self.batch_size]
-            response = self.client.embeddings.create(
-                model=self.model,
-                input=batch
-            )
-            batch_embeddings = [item.embedding for item in response.data]
-            all_embeddings.extend(batch_embeddings)
-        
+
+            # Ollama embedding API typically handles one prompt at a time reliably
+            for text in batch:
+                embedding = self._embed_single(text)
+                all_embeddings.append(embedding)
+
         return all_embeddings
 
 

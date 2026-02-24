@@ -1,20 +1,22 @@
 """
-Strategy Module
-===============
-LOCKED business logic and strategy pipeline (PHASE 1).
+Core Business Logic Module (LOCKED)
+====================================
+This module contains LOCKED business rules and deterministic calculations.
 
-Components:
-- business_rules: Constants, KPIs, constraints, assumptions
-- calculations: Deterministic calculation functions
-- pipeline: Strategy orchestration following locked thinking order
+DO NOT MODIFY without business approval.
+
+Modules:
+- strategy: PHASE 1 - Locked business rules, calculations, pipeline
+- channel: PHASE 3 - Channel growth intelligence
 
 Author: Backend Engineering Team
 Created: 2026-02-18
 """
 
-# Business Rules (LOCKED)
-from core.strategy.business_rules import (
-    # Constants
+# Strategy Module (PHASE 1)
+from . import strategy
+from .strategy import (
+    # Business Rules (LOCKED)
     OBJECTIVE,
     FUNNEL,
     KPI,
@@ -28,17 +30,14 @@ from core.strategy.business_rules import (
     calculate_demo_contribution,
     calculate_channel_impact_score,
     calculate_sales_capacity,
-)
-
-# Calculations (Core Logic)
-from core.strategy.calculations import (
     # Data Structures
     OverallMetrics,
     ChannelMetrics,
     ChannelImpact,
     SimulationResult,
     CapacityCheck,
-    # Step Functions
+    StrategyPipelineResult,
+    # Calculations
     calculate_overall_demo_rate,
     calculate_channel_metrics,
     rank_channels,
@@ -46,22 +45,21 @@ from core.strategy.calculations import (
     simulate_increase,
     simulate_reduction,
     check_capacity,
-    # Helpers
-    get_highest_demo_rate_channel,
-    get_high_volume_low_conversion_channels,
     get_scalable_channels,
     get_reducible_channels,
-)
-
-# Pipeline
-from core.strategy.pipeline import (
-    StrategyPipelineResult,
+    # Pipeline
     run_strategy_pipeline,
     get_recommendations,
 )
 
+# Channel Intelligence Module (PHASE 3)
+from . import channel
+
 
 __all__ = [
+    # Modules
+    "strategy",
+    "channel",
     # Business Rules
     "OBJECTIVE",
     "FUNNEL",
@@ -91,8 +89,6 @@ __all__ = [
     "simulate_increase",
     "simulate_reduction",
     "check_capacity",
-    "get_highest_demo_rate_channel",
-    "get_high_volume_low_conversion_channels",
     "get_scalable_channels",
     "get_reducible_channels",
     # Pipeline

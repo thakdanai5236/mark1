@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     
     # LLM Settings
     LLM_PROVIDER: str = "ollama"  # 'openai' or 'ollama'
-    OPENAI_API_KEY: Optional[str] = None
     LLM_MODEL: str = "llama2"  # Default model for Ollama
     LLM_TEMPERATURE: float = 0.7
     
